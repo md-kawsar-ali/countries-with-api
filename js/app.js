@@ -1,9 +1,17 @@
+// Retrieve Html element
 const wrapperDiv = document.getElementById('wrapper');
-
-// Preloader and Alert Message
 const loader = document.querySelector('.loader');
 const msgElement = document.querySelector('.message');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const headerHeight = document.getElementById('header').offsetHeight;
 
+// Call All Countries onload
+window.onload = () => {
+    loadAPI('all');
+};
+
+// Preloader and Alert Message
 const msg = (msg) => {
     msgElement.innerHTML = `${msg}!`;
     msgElement.style.display = 'block';
@@ -49,12 +57,10 @@ const displayCountry = (countries) => {
 
         wrapperDiv.appendChild(div);
     });
+    scrollToResult();
 }
 
 // Search Country
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-
 function searchNow(e) {
     e.preventDefault();
     const inputText = searchInput.value.toLowerCase();
@@ -63,6 +69,7 @@ function searchNow(e) {
         const addPrefix = `name/${inputText}`;
         loadAPI(addPrefix);
         msgElement.style.display = 'none';
+        searchInput.value = '';
     }
 }
 searchBtn.addEventListener('click', searchNow);
@@ -72,5 +79,11 @@ const removeCurrent = () => {
     wrapperDiv.innerHTML = ``;
 }
 
-
-loadAPI('all');
+// Scroll to result
+const scrollToResult = () => {
+    window.scroll({
+        top: headerHeight,
+        left: 0,
+        behavior: 'smooth'
+    });
+}
