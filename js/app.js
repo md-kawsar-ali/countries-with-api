@@ -1,17 +1,36 @@
-const loadAPI = async () => {
-    const url = `https://restcountries.com/v2/all`;
+const wrapperDiv = document.getElementById('wrapper');
 
+// Preloader and Alert Message
+const loader = document.querySelector('.loader');
+const msgElement = document.querySelector('.message');
+
+const msg = (msg) => {
+    msgElement.innerHTML = `${msg}!`;
+    msgElement.style.display = 'block';
+}
+
+// Fetch API
+const loadAPI = async (text) => {
+    removeCurrent();
+    loader.style.display = 'block';
+    const url = `https://restcountries.com/v2/${text}`;
     const res = await fetch(url);
     const data = await res.json();
 
-    if (data) {
+    if (res.status === 200 && Array.isArray(data)) {
+        msgElement.style.display = 'none';
+        loader.style.display = 'none';
         displayCountry(data);
+
+    } else {
+        loader.style.display = 'none';
+        msg(data.message);
     }
 }
 
+// Mapping All Countries and Display
 const displayCountry = (countries) => {
-    const wrapperDiv = document.getElementById('wrapper');
-
+    removeCurrent();
     countries.map(country => {
         const div = document.createElement('div');
         div.classList.add('col');
@@ -32,4 +51,26 @@ const displayCountry = (countries) => {
     });
 }
 
-loadAPI();
+// Search Country
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
+function searchNow(e) {
+    e.preventDefault();
+    const inputText = searchInput.value.toLowerCase();
+
+    if (inputText) {
+        const addPrefix = `name/${inputText}`;
+        loadAPI(addPrefix);
+        msgElement.style.display = 'none';
+    }
+}
+searchBtn.addEventListener('click', searchNow);
+
+// Remove Current Element
+const removeCurrent = () => {
+    wrapperDiv.innerHTML = ``;
+}
+
+
+loadAPI('all');
