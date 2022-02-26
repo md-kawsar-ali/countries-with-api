@@ -57,10 +57,15 @@ const displayCountry = (countries) => {
 
         wrapperDiv.appendChild(div);
     });
-    scrollToResult();
+
+    // Scroll Down to Result IF Searching
+    if (searching) {
+        scrollToResult();
+    }
 }
 
 // Search Country
+let searching = false;
 function searchNow(e) {
     e.preventDefault();
     const inputText = searchInput.value.toLowerCase();
@@ -71,6 +76,7 @@ function searchNow(e) {
         msgElement.style.display = 'none';
         searchInput.value = '';
     }
+    searching = true;
 }
 searchBtn.addEventListener('click', searchNow);
 
