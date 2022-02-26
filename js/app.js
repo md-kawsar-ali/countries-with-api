@@ -11,7 +11,16 @@ window.onload = () => {
     loadAPI('all');
 };
 
-// Preloader and Alert Message
+// Preloader
+const preLoader = (isShow) => {
+    if (isShow) {
+        loader.style.display = 'block';
+    } else {
+        loader.style.display = 'none';
+    }
+}
+
+// Alert Message
 const msg = (msg) => {
     msgElement.innerHTML = `${msg}!`;
     msgElement.style.display = 'block';
@@ -20,25 +29,27 @@ const msg = (msg) => {
 // Fetch API
 const loadAPI = async (text) => {
     removeCurrent();
-    loader.style.display = 'block';
+    preLoader(true);
     const url = `https://restcountries.com/v2/${text}`;
     const res = await fetch(url);
     const data = await res.json();
 
     if (res.status === 200 && Array.isArray(data)) {
         msgElement.style.display = 'none';
-        loader.style.display = 'none';
+        preLoader(false);
         displayCountry(data);
 
     } else {
-        loader.style.display = 'none';
+        preLoader(false);
         msg(data.message);
     }
 }
 
-// Mapping All Countries and Display
+// Mapping All Countries and Display Results
 const displayCountry = (countries) => {
-    removeCurrent();
+    if (searching) {
+        removeCurrent(); //Clear Current Element
+    }
     countries.map(country => {
         const div = document.createElement('div');
         div.classList.add('col');
@@ -54,22 +65,19 @@ const displayCountry = (countries) => {
     <li><span class="label">Calling Codes:</span> <span>+${country.callingCodes}</span></li>
             </ul >
     `;
-
         wrapperDiv.appendChild(div);
     });
 
-    // Scroll Down to Result IF Searching
     if (searching) {
-        scrollToResult();
+        scrollToResult(); // Scroll Down to Result
     }
 }
 
-// Search Country
+// Search Country By Name
 let searching = false;
-function searchNow(e) {
-    e.preventDefault();
+searchBtn.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent Default Submission
     const inputText = searchInput.value.toLowerCase();
-
     if (inputText) {
         const addPrefix = `name/${inputText}`;
         loadAPI(addPrefix);
@@ -77,15 +85,14 @@ function searchNow(e) {
         searchInput.value = '';
     }
     searching = true;
-}
-searchBtn.addEventListener('click', searchNow);
+});
 
 // Remove Current Element
 const removeCurrent = () => {
     wrapperDiv.innerHTML = ``;
 }
 
-// Scroll to result
+// Scroll Down to Result
 const scrollToResult = () => {
     window.scroll({
         top: headerHeight,
