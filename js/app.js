@@ -30,18 +30,24 @@ const msg = (msg) => {
 const loadAPI = async (text) => {
     removeCurrent();
     preLoader(true);
-    const url = `https://restcountries.com/v2/${text}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    // Check Internet Connection
+    if (navigator.onLine) {
+        const url = `https://restcountries.com/v2/${text}`;
+        const res = await fetch(url);
+        const data = await res.json();
 
-    if (res.status === 200 && Array.isArray(data)) {
-        msgElement.style.display = 'none';
-        preLoader(false);
-        displayCountry(data);
+        if (res.status === 200 && Array.isArray(data)) {
+            msgElement.style.display = 'none';
+            preLoader(false);
+            displayCountry(data);
 
+        } else {
+            preLoader(false);
+            msg(data.message);
+        }
     } else {
         preLoader(false);
-        msg(data.message);
+        msg('Please, check your Internet connection and try again');
     }
 }
 
@@ -81,7 +87,10 @@ searchBtn.addEventListener('click', (e) => {
     if (inputText) {
         const addPrefix = `name/${inputText}`;
         loadAPI(addPrefix);
-        msgElement.style.display = 'none';
+        // Check Internet Connection
+        if (navigator.onLine) {
+            msgElement.style.display = 'none';
+        }
         searchInput.value = '';
     }
     searching = true;
